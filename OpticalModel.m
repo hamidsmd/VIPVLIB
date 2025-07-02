@@ -51,14 +51,12 @@ addpath('Functions\');
 
 [doy] = pvl_date2doy(Year, Month, Day); % Day of year
 
-[Ea] = pvl_extraradiation(doy); % Extraterrestrial radiation
+[Ea] = pvl_extraradiation(doy); % Extraterrestrial normal irradiance
 
 [SunAz, ApparentSunEl] = pvl_ephemeris(Time, Location, Pressure, Temperature); % Solar Position
 sunaz = SunAz;
 
-El(1:length(Azimuth),1) = ApparentSunEl(1:length(Azimuth),1) * (pi/180);
-El1 = sin(El);
-HExtra(1:length(Azimuth),1) = Ea .* El1; % Extraterrestrial normal irradiance
+HExtra = Ea ; % Extraterrestrial normal irradiance
 
 z = 90 - ApparentSunEl; % Apparent zenith
 sunzen = z;
