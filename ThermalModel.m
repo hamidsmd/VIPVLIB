@@ -15,8 +15,11 @@ windsp = xlsread('Data/Windspeed.xlsx'); % Wind Speed (m/s)
 
 Speed = xlsread('Data/Speed.xlsx'); % Vehicle Speed (m/s)
 
+% The following equation was used to adjust the wind speed data from climatological datasets,
+% typically measured at 10 meters above ground, to correspond to roof height.
+
 hroof = 2.8; %  Roof Height (m)
-windsp1 = windsp * (hroof / (10 ^ 0.2)); % This equation was used to adjust the wind speed data from climatological datasets, typically measured at 10 meters above ground, to correspond to roof height.
+windsp1 = windsp * (hroof / (10 ^ 0.2));
 
 
 for i = 1:length(G_top)
@@ -33,7 +36,8 @@ end
 
 end
 
-%% Thermal Model
+
+%% Thermal Model [1], [2]
 
 NOCT = 48; % Nominal Operating Cell Temperature (°C)
 T_amb = 20; % Ambient Air Temperature (°C)
@@ -58,10 +62,19 @@ for j = 1:length(G_top)
 
 end
 
+%% Thermal Inertia
+
+% Following the approach proposed by Patel et al. [3], the second-by-second temperature data
+% can be averaged over intervals of 1000 to 1500 seconds to account for thermal inertia.
+
+% Based on your case study, you may adjust this section and modify the averaging time step
+% to appropriately account for thermal inertia.
+
+
 T_Faiman = ones(length(G_top),4);
 
 
-T_Faiman (:,1) = T_Faiman (:,1) * mean(Tft); % Average Temperature During Driving Cycle
+T_Faiman (:,1) = T_Faiman (:,1) * mean(Tft);
 T_Faiman (:,2) = T_Faiman (:,2) * mean(Tfb);
 T_Faiman (:,3) = T_Faiman (:,3) * mean(Tfr);
 T_Faiman (:,4) = T_Faiman (:,4) * mean(Tfl);
@@ -71,7 +84,7 @@ writematrix(T_Faiman, 'T_Faiman.xlsx');
 
 T_NOCT = ones(length(G_top),4);
 
-T_NOCT (:,1) = T_NOCT (:,1) * mean(Tnt); % Average Temperature During Driving Cycle
+T_NOCT (:,1) = T_NOCT (:,1) * mean(Tnt);
 T_NOCT (:,2) = T_NOCT (:,2) * mean(Tnb);
 T_NOCT (:,3) = T_NOCT (:,3) * mean(Tnr);
 T_NOCT (:,4) = T_NOCT (:,4) * mean(Tnl);
@@ -167,3 +180,18 @@ ax.FontName = 'Times New Roman'; % Set font name for tick values
 ax.FontSize = 14; % Set font size for tick values
 
 grid on;
+
+
+%% References
+
+% [1] Faiman, D. (2008). Assessing the outdoor operating temperature of photovoltaic modules.
+% Progress in Photovoltaics: Research and Applications, 16(4), 307-315.
+
+% [2] Bharti, R., Kuitche, J., & TamizhMani, M. G. (2009, June). Nominal Operating Cell Temperature
+% (NOCT): Effects of module size, loading and solar spectrum. In 2009 34th IEEE Photovoltaic
+% Specialists Conference (PVSC) (pp. 001657-001662). IEEE.
+
+% [3] Patel, N., Pieters, B. E., Bittkau, K., Sovetkin, E., Ding, K., & Reinders, A. (2024).
+% Assessing the accuracy of two steady‐state temperature models for onboard passenger vehicle
+% photovoltaics applications. Progress in Photovoltaics: Research and Applications, 32(11), 790-798.
+
